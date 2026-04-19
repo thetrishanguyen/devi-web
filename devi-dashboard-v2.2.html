@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAKED × DEVI — Strategy Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef;
+  --surf:#ffffff;
+  --surf2:#eceae3;
+  --brd:#dbd8ce;
+  --brd2:#c5c1b4;
+  --ink:#1c1a14;
+  --ink2:#6b6555;
+  --ink3:#a09880;
+  --grn:#2d6a4f;
+  --grn-bg:#e6f3ec;
+  --grn-mid:#8ec4a8;
+  --grn-dk:#1a4a36;
+  --sage:#4a7c6f;
+  --sage-bg:#e8f0ed;
+  --erth:#7c5828;
+  --erth-bg:#f5ede0;
+  --erth-mid:#cfa06a;
+  --erth-dk:#5a3e1a;
+  --clay:#9a3e28;
+  --clay-bg:#faece6;
+  --clay-mid:#d89070;
+  --gold:#8a7030;
+  --gold-bg:#faf3e0;
+  --font:'DM Sans',sans-serif;
+  --serif:'Lora',serif;
+  --r:8px;--rl:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px}
+body{display:flex;flex-direction:column;overflow:hidden}
+
+/* TOP BAR */
+.topbar{height:48px;background:var(--surf);border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 20px;gap:10px;flex-shrink:0}
+.t-logo{display:flex;align-items:center;gap:9px}
+.t-mark{width:30px;height:30px;border-radius:7px;background:var(--grn-bg);border:1px solid var(--grn-mid);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:11px;color:var(--grn);letter-spacing:.04em}
+.t-name{font-family:var(--serif);font-size:15px;color:var(--ink);letter-spacing:.03em}
+.t-sep{color:var(--brd2);font-size:18px;line-height:1}
+.t-crumb{font-size:11px;color:var(--ink3)}
+.t-right{margin-left:auto;display:flex;gap:7px;align-items:center}
+.tpill{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:500;letter-spacing:.01em}
+.tp-grn{background:var(--grn-bg);color:var(--grn-dk);border:1px solid var(--grn-mid)}
+.tp-erth{background:var(--erth-bg);color:var(--erth-dk);border:1px solid var(--erth-mid)}
+
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:216px;min-width:216px;background:var(--surf);border-right:1px solid var(--brd);display:flex;flex-direction:column;overflow-y:auto}
+.sb-top{padding:16px 16px 12px;border-bottom:1px solid var(--brd)}
+.sb-brand{font-family:var(--serif);font-size:13px;color:var(--ink);letter-spacing:.02em;font-style:italic}
+.sb-sub{font-size:10px;color:var(--ink3);margin-top:3px;line-height:1.5}
+.sb-prog{padding:9px 16px;border-bottom:1px solid var(--brd)}
+.prog-row{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:5px}
+.prog-track{height:2px;background:var(--brd);border-radius:1px}
+.prog-fill{height:2px;background:var(--grn);border-radius:1px;width:50%}
+.nav-g{padding:8px 0 4px}
+.nav-cat{font-size:9px;font-weight:600;color:var(--ink3);padding:3px 16px;text-transform:uppercase;letter-spacing:.1em;display:flex;align-items:center;gap:5px}
+.cmark{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px}
+.cm-g{background:var(--grn-bg);color:var(--grn)}
+.cm-s{background:var(--sage-bg);color:var(--sage)}
+.cm-e{background:var(--erth-bg);color:var(--erth)}
+.cm-c{background:var(--clay-bg);color:var(--clay)}
+.nav-item{display:flex;align-items:center;gap:7px;padding:7px 16px;font-size:12px;cursor:pointer;color:var(--ink2);transition:background .1s;position:relative;line-height:1.35}
+.nav-item:hover{background:var(--bg);color:var(--ink)}
+.nav-item.active{background:var(--bg);color:var(--ink);font-weight:500}
+.nav-item.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:2px;background:var(--grn);border-radius:0 2px 2px 0}
+.nav-item.locked{opacity:.33;cursor:not-allowed;pointer-events:none}
+.nd{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.done{background:var(--grn)}.wip{background:var(--gold)}.off{background:var(--brd2)}
+.lk{margin-left:auto;font-size:9px;opacity:.7}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:26px 30px 40px;background:var(--bg)}
+.page{display:none}.page.active{display:block}
+.crumb{font-size:10px;color:var(--ink3);margin-bottom:7px;text-transform:uppercase;letter-spacing:.05em}
+.ptitle{font-family:var(--serif);font-size:23px;color:var(--ink);line-height:1.2;letter-spacing:.01em}
+.pdesc{font-size:12px;color:var(--ink2);margin-top:6px;line-height:1.7;max-width:680px}
+
+/* DIVIDER */
+.div{height:1px;background:var(--brd);margin:18px 0}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
+.sc{background:var(--surf);border:1px solid var(--brd);border-radius:var(--rl);padding:14px}
+.sc-l{font-size:9px;color:var(--ink3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.07em}
+.sc-v{font-size:19px;font-weight:600;letter-spacing:-.02em;line-height:1.2}
+.sc-s{font-size:10px;color:var(--ink3);margin-top:3px;line-height:1.4}
+.vg{color:var(--grn)}.ve{color:var(--erth)}.vc{color:var(--clay)}.vgd{color:var(--gold)}
+
+/* SECTION TITLE */
+.stitle{font-size:13px;font-weight:600;color:var(--ink);margin:20px 0 10px;letter-spacing:.01em}
+.stitle-serif{font-family:var(--serif);font-size:15px;font-weight:400;color:var(--ink);margin:20px 0 10px;font-style:italic}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--brd);border-radius:var(--rl);padding:14px}
+.card.click{cursor:pointer;transition:border-color .15s}
+.card.click:hover{border-color:var(--brd2)}
+.cl{font-size:9px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:5px}
+.ct{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:4px;line-height:1.35}
+.cb{font-size:11px;color:var(--ink2);line-height:1.6}
+
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
+.tag{font-size:10px;padding:2px 7px;border-radius:3px;border:.5px solid}
+.tg{background:var(--grn-bg);color:var(--grn-dk);border-color:var(--grn-mid)}
+.ts{background:var(--sage-bg);color:var(--sage);border-color:#8abcae}
+.te{background:var(--erth-bg);color:var(--erth-dk);border-color:var(--erth-mid)}
+.tc{background:var(--clay-bg);color:var(--clay);border-color:var(--clay-mid)}
+.tgd{background:var(--gold-bg);color:var(--gold);border-color:#c8b060}
+.tn{background:var(--surf2);color:var(--ink2);border-color:var(--brd)}
+
+/* INSIGHT STRIP */
+.ins{border-left:2px solid var(--grn-mid);padding:10px 14px;background:var(--grn-bg);border-radius:0 var(--r) var(--r) 0;margin-bottom:8px}
+.ins.e{border-left-color:var(--erth-mid);background:var(--erth-bg)}
+.ins.c{border-left-color:var(--clay-mid);background:var(--clay-bg)}
+.ins.s{border-left-color:#8abcae;background:var(--sage-bg)}
+.ins-h{font-size:11px;font-weight:600;margin-bottom:3px}
+.ins .ins-h{color:var(--grn)}.ins.e .ins-h{color:var(--erth)}.ins.c .ins-h{color:var(--clay)}.ins.s .ins-h{color:var(--sage)}
+.ins-b{font-size:11px;color:var(--ink2);line-height:1.6}
+
+/* HERO QUOTE */
+.hq{background:var(--grn-bg);border:1px solid var(--grn-mid);border-radius:var(--rl);padding:18px 20px;margin:14px 0}
+.hq-text{font-family:var(--serif);font-size:15px;color:var(--grn-dk);line-height:1.7;font-style:italic}
+.hq-src{font-size:10px;color:var(--grn);margin-top:6px}
+
+/* JOURNEY FLOW */
+.flow{display:flex;gap:0;align-items:stretch;margin:10px 0}
+.fstep{flex:1;background:var(--surf);border:1px solid var(--brd);padding:14px 12px;position:relative}
+.fstep:first-child{border-radius:var(--rl) 0 0 var(--rl)}
+.fstep:last-child{border-radius:0 var(--rl) var(--rl) 0}
+.fstep+.fstep{border-left:none}
+.fstep::after{content:'→';position:absolute;right:-11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--ink3);z-index:2;background:var(--surf);width:22px;text-align:center}
+.fstep:last-child::after{display:none}
+.fn{font-size:9px;font-weight:700;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}
+.ft{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.fb{font-size:11px;color:var(--ink2);line-height:1.5}
+.fkpi{font-size:9px;font-weight:600;margin-top:7px;padding:2px 7px;border-radius:3px;display:inline-block}
+.fk-g{background:var(--grn-bg);color:var(--grn)}.fk-e{background:var(--erth-bg);color:var(--erth)}.fk-c{background:var(--clay-bg);color:var(--clay)}.fk-s{background:var(--sage-bg);color:var(--sage)}
+
+/* REVENUE ROWS */
+.rev-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:7px}
+.rev-ico{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ri-g{background:var(--grn-bg)}.ri-e{background:var(--erth-bg)}.ri-c{background:var(--clay-bg)}
+.rev-info{flex:1}
+.rev-t{font-size:13px;font-weight:500;color:var(--ink)}
+.rev-d{font-size:11px;color:var(--ink2);margin-top:2px;line-height:1.5}
+.rev-right{text-align:right;flex-shrink:0}
+.rev-m{font-size:11px;font-weight:600}
+.m-lo{color:var(--clay)}.m-mi{color:var(--gold)}.m-hi{color:var(--grn)}
+.rev-r{font-size:9px;color:var(--ink3);margin-top:2px}
+
+/* PERSONA */
+.pcard{background:var(--surf);border:1px solid var(--brd);border-radius:var(--rl);padding:15px}
+.pava{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;margin-bottom:10px}
+.av-g{background:var(--grn-bg);color:var(--grn)}.av-e{background:var(--erth-bg);color:var(--erth)}.av-c{background:var(--clay-bg);color:var(--clay)}
+.pname{font-size:13px;font-weight:500;color:var(--ink)}
+.prole{font-size:10px;color:var(--ink3);margin-bottom:9px}
+.prow{display:flex;justify-content:space-between;align-items:flex-start;font-size:11px;padding:5px 0;border-bottom:.5px solid var(--brd)}
+.prow:last-child{border:none}
+.pk{color:var(--ink3);flex-shrink:0;width:78px}
+.pv{color:var(--ink2);text-align:right;flex:1;line-height:1.45}
+
+/* COMPETITOR */
+.comp-wrap{overflow-x:auto;margin-top:8px}
+.ctable{width:100%;border-collapse:collapse;font-size:11px;min-width:500px}
+.ctable th{text-align:left;font-size:9px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;padding:5px 10px;border-bottom:1px solid var(--brd);white-space:nowrap}
+.ctable td{padding:8px 10px;border-bottom:.5px solid var(--brd);color:var(--ink2);vertical-align:middle}
+.ctable tr:last-child td{border:none}
+.ctable td:first-child{font-weight:500;color:var(--ink)}
+.ctable .devi td{background:var(--grn-bg)}
+.ctable .devi td:first-child{color:var(--grn-dk)}
+.dot-s{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--grn);margin-right:3px;vertical-align:middle}
+.dot-m{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--erth-mid);margin-right:3px;vertical-align:middle}
+.dot-w{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--clay-mid);margin-right:3px;vertical-align:middle}
+
+/* BMC */
+.bmc{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:auto auto;gap:7px;margin-top:10px}
+.bc{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:12px}
+.bc.sp2r{grid-row:span 2}.bc.sp3c{grid-column:span 3}.bc.sp2c{grid-column:span 2}
+.bc.focus{border-color:var(--grn-mid);background:var(--grn-bg)}
+.bl{font-size:9px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:5px}
+.bc.focus .bl{color:var(--grn)}
+.bt{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.bb{font-size:10px;color:var(--ink2);line-height:1.55}
+
+/* RISK */
+.risk{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-radius:var(--r);margin-bottom:7px;border:.5px solid}
+.risk.hi{background:var(--clay-bg);border-color:var(--clay-mid)}
+.risk.md{background:var(--erth-bg);border-color:var(--erth-mid)}
+.risk.lo{background:var(--sage-bg);border-color:#8abcae}
+.rbadge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:1px;letter-spacing:.04em}
+.rb-hi{background:var(--clay);color:#fff}.rb-md{background:var(--erth);color:#fff}.rb-lo{background:var(--grn);color:#fff}
+.risk-t{font-size:12px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.risk-b{font-size:11px;color:var(--ink2);line-height:1.55}
+
+/* PHASE CARDS */
+.phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.phase{border-radius:var(--rl);padding:15px;border:1px solid}
+.ph1{background:var(--grn-bg);border-color:var(--grn-mid)}
+.ph2{background:var(--sage-bg);border-color:#8abcae}
+.ph3{background:var(--erth-bg);border-color:var(--erth-mid)}
+.ph4{background:var(--clay-bg);border-color:var(--clay-mid)}
+.phase-n{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.ph1 .phase-n{color:var(--grn)}.ph2 .phase-n{color:var(--sage)}.ph3 .phase-n{color:var(--erth)}.ph4 .phase-n{color:var(--clay)}
+.phase-t{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:4px}
+.phase-b{font-size:11px;color:var(--ink2);line-height:1.55}
+.phase-kpi{font-size:10px;font-weight:600;margin-top:8px;padding:3px 0;border-top:.5px solid}
+.ph1 .phase-kpi{color:var(--grn);border-color:var(--grn-mid)}.ph2 .phase-kpi{color:var(--sage);border-color:#8abcae}
+.ph3 .phase-kpi{color:var(--erth);border-color:var(--erth-mid)}.ph4 .phase-kpi{color:var(--clay);border-color:var(--clay-mid)}
+
+/* KPI CHECKS */
+.kpi-list{margin-top:10px}
+.kpi-item{display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--surf);border:.5px solid var(--brd);border-radius:var(--r);margin-bottom:6px;font-size:12px}
+.kpi-num{width:22px;height:22px;border-radius:50%;background:var(--grn-bg);color:var(--grn);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.kpi-t{color:var(--ink);font-weight:500;flex:1}
+.kpi-why{font-size:10px;color:var(--ink3)}
+
+/* PLACEHOLDER */
+.ph-box{border:1px dashed var(--brd2);border-radius:var(--rl);padding:16px;text-align:center;color:var(--ink3);font-size:11px;margin-top:8px}
+.ph-box strong{display:block;font-size:12px;color:var(--ink2);margin-bottom:3px}
+
+/* NOTE BAR */
+.notebar{background:var(--surf2);border-radius:var(--r);padding:10px 14px;font-size:11px;color:var(--ink2);line-height:1.65;margin-top:14px;border-left:2px solid var(--grn-mid)}
+
+/* DO / DONT */
+.dos-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:.5px solid var(--brd);font-size:11px}
+.dos-row:last-child{border:none}
+.dos-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+.di-yes{background:var(--grn-bg);color:var(--grn)}.di-no{background:var(--clay-bg);color:var(--clay)}
+.dos-text{color:var(--ink2);line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="t-logo">
+    <div class="t-mark">D</div>
+    <span class="t-name">DEVI</span>
+  </div>
+  <span class="t-sep">/</span>
+  <span class="t-crumb" id="tcrumb">Chiến lược Tổng thể</span>
+  <div class="t-right">
+    <span class="tpill tp-grn">Wellness · Yoga · Thuận Tự Nhiên</span>
+    <span class="tpill tp-erth">Founders: Prema & Vinayaki</span>
+  </div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand">DEVI Natural Living</div>
+    <div class="sb-sub">Sản phẩm · Workshop · Retreat · Cộng đồng</div>
+  </div>
+  <div class="sb-prog">
+    <div class="prog-row"><span>Hoàn thiện</span><span>6 / 12 sections</span></div>
+    <div class="prog-track"><div class="prog-fill"></div></div>
+  </div>
+
+  <div class="nav-g">
+    <div class="nav-cat"><span class="cmark cm-g">◎</span>Chiến lược Tổng thể</div>
+    <div class="nav-item active" onclick="go('home',this,'Chiến lược Tổng thể')"><span class="nd done"></span>Trang chủ</div>
+    <div class="nav-item" onclick="go('system',this,'Cấu trúc Hệ sinh thái')"><span class="nd done"></span>Hệ Sinh thái</div>
+  </div>
+
+  <div class="nav-g">
+    <div class="nav-cat"><span class="cmark cm-g">1</span>Thị trường</div>
+    <div class="nav-item" onclick="go('market',this,'Thị trường & Khách hàng')"><span class="nd done"></span>Thị trường & Khách hàng</div>
+    <div class="nav-item" onclick="go('persona',this,'Chân dung Khách hàng')"><span class="nd wip"></span>Chân dung Khách hàng</div>
+    <div class="nav-item" onclick="go('competitor',this,'Đối thủ Cạnh tranh')"><span class="nd done"></span>Đối thủ Cạnh tranh</div>
+  </div>
+
+  <div class="nav-g">
+    <div class="nav-cat"><span class="cmark cm-s">2</span>Mô hình KD</div>
+    <div class="nav-item" onclick="go('bmc',this,'Mô hình Kinh doanh')"><span class="nd wip"></span>Mô hình Kinh doanh</div>
+    <div class="nav-item" onclick="go('revenue',this,'Cơ cấu Doanh thu & Chiến lược Giá')"><span class="nd done"></span>Doanh thu & Định giá</div>
+    <div class="nav-item locked"><span class="nd off"></span>Danh mục Sản phẩm<span class="lk">🔒</span></div>
+    <div class="nav-item locked"><span class="nd off"></span>Hành trình Khách hàng<span class="lk">🔒</span></div>
+  </div>
+
+  <div class="nav-g">
+    <div class="nav-cat"><span class="cmark cm-e">3</span>Vận hành</div>
+    <div class="nav-item" onclick="go('risk',this,'Rủi ro & Pháp lý')"><span class="nd done"></span>Rủi ro & Pháp lý</div>
+    <div class="nav-item locked"><span class="nd off"></span>Tài chính & Chi phí<span class="lk">🔒</span></div>
+    <div class="nav-item locked"><span class="nd off"></span>Đội ngũ & Văn hoá<span class="lk">🔒</span></div>
+  </div>
+
+  <div class="nav-g">
+    <div class="nav-cat"><span class="cmark cm-c">4</span>Triển khai</div>
+    <div class="nav-item" onclick="go('roadmap',this,'Kế hoạch Triển khai')"><span class="nd wip"></span>Kế hoạch Triển khai</div>
+    <div class="nav-item locked"><span class="nd off"></span>Nội dung & Tiếp thị<span class="lk">🔒</span></div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+<!-- ═══════════════════════ TRANG CHỦ -->
+<div class="page active" id="page-home">
+  <div class="crumb">chiến lược tổng thể</div>
+  <div class="ptitle">DEVI — Cấu trúc Hệ sinh thái (Chuyển hoá toàn diện Thân -> Tâm -> Trí)</div>
+  <div class="pdesc">DEVI không bán sản phẩm đơn lẻ. DEVI thiết lập một hành trình tỉnh thức giúp khách hàng tái định nghĩa lối sống — từ thói quen nhỏ nhất đến sự chuyển hoá sâu sắc bên trong.</div>
+
+  <div class="stats">
+    <div class="sc">
+      <div class="sc-l">Loại hình</div>
+      <div class="sc-v vg" style="font-size:13px;font-family:var(--serif);font-style:italic;line-height:1.3;margin-top:3px">Hệ Sinh thái<br>Sống Thuận Tự nhiên</div>
+    </div>
+    <div class="sc">
+      <div class="sc-l">Nguồn doanh thu</div>
+      <div class="sc-v ve">3</div>
+      <div class="sc-s">Sản phẩm · Workshop · Retreat</div>
+    </div>
+    <div class="sc">
+      <div class="sc-l">Ưu tiên xử lý</div>
+      <div class="sc-v vc" style="font-size:12px;margin-top:3px;line-height:1.35">Pháp lý<br>& Nguồn hàng</div>
+    </div>
+    <div class="sc">
+      <div class="sc-l">Đang hoàn thiện</div>
+      <div class="sc-v vg">6</div>
+      <div class="sc-s">/ 12 sections</div>
+    </div>
+  </div>
+
+  <div class="stitle-serif">Hành trình của khách hàng</div>
+  <div class="flow">
+    <div class="fstep">
+      <div class="fn">Bắt đầu</div>
+      <div class="ft">Sản phẩm</div>
+      <div class="fb">Điểm chạm hàng ngày. Giúp khách bắt đầu chăm sóc bản thân. Tạo thói quen đơn giản.</div>
+      <div class="fkpi fk-g">Đo: Tần suất dùng lại</div>
+    </div>
+    <div class="fstep">
+      <div class="fn">Tin tưởng</div>
+      <div class="ft">Workshop</div>
+      <div class="fb">Trải nghiệm trực tiếp đầu tiên. Khách "cảm nhận được" hiệu quả. Xây dựng niềm tin.</div>
+      <div class="fkpi fk-e">Đo: Tỷ lệ quay lại</div>
+    </div>
+    <div class="fstep">
+      <div class="fn">Thay đổi</div>
+      <div class="ft">Retreat</div>
+      <div class="fb">Trải nghiệm chuyên sâu. Khách thay đổi rõ rệt. Tạo gắn bó lâu dài.</div>
+      <div class="fkpi fk-c">Đo: Giới thiệu người mới</div>
+    </div>
+    <div class="fstep">
+      <div class="fn">Gắn bó</div>
+      <div class="ft">Cộng đồng</div>
+      <div class="fb">Khách quay lại. Giới thiệu thêm người mới. Hình thành cộng đồng sống lành.</div>
+      <div class="fkpi fk-s">Đo: Thành viên hoạt động</div>
+    </div>
+  </div>
+
+  <div class="stitle">3 Câu hỏi cốt lõi (Thước đo thành công):</div>
+  <div class="kpi-list">
+    <div class="kpi-item">
+      <div class="kpi-num">1</div>
+      <div class="kpi-t">Retention: Khách có quay lại không?</div>
+      <div class="kpi-why">Nếu không → vấn đề ở trải nghiệm, không phải marketing</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-num">2</div>
+      <div class="kpi-t">Referral: Họ có giới thiệu cho người khác không?</div>
+      <div class="kpi-why">Đây là kênh tăng trưởng tự nhiên của DEVI — không phải quảng cáo</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-num">3</div>
+      <div class="kpi-t">Transformation: Họ có thay đổi gì sau khi trải nghiệm không?</div>
+      <div class="kpi-why">Nếu khách không cảm nhận được sự thay đổi → toàn bộ hệ thống cần xem lại</div>
+    </div>
+  </div>
+
+  <div class="hq">
+    <div class="hq-text">"Lợi nhuận bền vững không nằm ở món hàng, mà nằm ở sự chuyển hoá. Sản phẩm tạo Thói quen — Workshop xây Niềm tin — Retreat tạo Bước ngoặt."</div>
+    <div class="hq-src">Chiến lược cốt lõi DEVI</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ HỆ THỐNG -->
+<div class="page" id="page-system">
+  <div class="crumb">chiến lược tổng thể / cấu trúc hệ sinh thái</div>
+  <div class="ptitle">Hệ sinh thái Chuyển hoá Sức khoẻ Toàn diện</div>
+  <div class="pdesc">DEVI không bán sản phẩm đơn lẻ. DEVI thiết lập một hành trình tỉnh thức giúp khách hàng tái định nghĩa lối sống — từ thói quen nhỏ nhất đến sự chuyển hoá sâu sắc bên trong.</div>
+
+  <div class="stitle-serif">4 tầng trong hệ thống</div>
+  <div class="g2">
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="cl">Tầng 1 · Sản phẩm</div>
+        <div class="ct">Thiết lập thói quen.</div>
+        <div class="cb">Dầu · Thảo mộc · Bộ sản phẩm chăm sóc cơ thể. Lối vào đơn giản nhất để khách hàng "chạm" vào triết lý thuận tự nhiên của DEVI mỗi ngày.</div>
+        <div class="tags"><span class="tag tg">Điểm chạm hằng ngày</span><span class="tag tn">Margin thấp</span></div>
+      </div>
+      <div class="card">
+        <div class="cl">Tầng 2 · Workshop</div>
+        <div class="ct">Nơi xây dựng Niềm tin</div>
+        <div class="cb">Hít thở · Ayurveda · Sound healing. Khách hàng phải "thấu" được hiệu quả ngay lập tức qua hơi thở, âm thanh và sự kết nối.</div>
+        <div class="tags"><span class="tag te">Nguồn thu chính</span><span class="tag tn">5–10 người / buổi</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="cl">Tầng 3 · Retreat</div>
+        <div class="ct">Nơi tạo ra sự thay đổi thật sự</div>
+        <div class="cb">2–5 ngày chuyên sâu. Nhỏ và kiểm soát chất lượng. Không gian chuyên sâu giúp khách hàng "biến" đổi hoàn toàn tâm thế. Đây là nguồn lợi nhuận và giá trị thương hiệu lớn nhất.</div>
+        <div class="tags"><span class="tag tc">Lợi nhuận cao nhất</span><span class="tag tn">Kiểm soát chất lượng</span></div>
+      </div>
+      <div class="card">
+        <div class="cl">Tầng 4 · Cộng đồng</div>
+        <div class="ct">Duy trì lối sống</div>
+        <div class="cb">Nhóm nhỏ · Telegram · Sự kiện định kỳ. Cộng đồng là lý do khách ở lại lâu dài — và tự giới thiệu người mới mà không cần quảng cáo.</div>
+        <div class="tags"><span class="tag ts">Giữ chân khách</span><span class="tag tg">Tăng trưởng tự nhiên</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stitle">Tại sao hệ thống này đúng với DEVI</div>
+  <div class="g2">
+    <div>
+      <div class="ins" style="margin-bottom:8px">
+        <div class="ins-h">Người dùng đã thử nhiều — nhưng chưa tin thứ nào</div>
+        <div class="ins-b">Đây không phải thị trường thiếu sản phẩm. Đây là thị trường thiếu thứ "thực sự có hiệu quả và đáng tin". DEVI giải quyết điều này bằng trải nghiệm trực tiếp — không phải quảng cáo.</div>
+      </div>
+      <div class="ins e">
+        <div class="ins-h">Khách mua cảm nhận — không mua khái niệm</div>
+        <div class="ins-b">Không ai mua vì nghe giảng về Ayurveda. Họ mua khi cảm thấy: hít thở nhẹ hơn / ngủ ngon hơn / da dễ chịu hơn. Entry point phải cho khách "cảm nhận được ngay".</div>
+      </div>
+    </div>
+    <div>
+      <div class="ins c" style="margin-bottom:8px">
+        <div class="ins-h">Khách không mua vì thấy nội dung hay</div>
+        <div class="ins-b">Họ mua khi: stress lên đến mức cần giải pháp ngay — hoặc có người tin tưởng giới thiệu. Vì vậy: đầu tư vào testimonial và referral, không phải vào quảng cáo trả tiền.</div>
+      </div>
+      <div class="ins s">
+        <div class="ins-h">Scale không cần quảng cáo</div>
+        <div class="ins-b">Nội dung → thu hút. Workshop → chuyển đổi. Cộng đồng → giữ chân. Ba bước này lặp lại và tự scale. Quảng cáo chỉ nên dùng sau khi vòng lặp này đã được kiểm chứng.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ THỊ TRƯỜNG -->
+<div class="page" id="page-market">
+  <div class="crumb">thị trường / tổng quan</div>
+  <div class="ptitle">Thị trường & Khách hàng</div>
+  <div class="pdesc">Thực trạng: Thị trường Wellness Việt Nam bùng nổ nhưng "hỗn loạn". Khách hàng đang bội thực quảng cáo nhưng thiếu hụt niềm tin vào chất lượng thực chứng.</div>
+
+  <div class="stats">
+    <div class="sc">
+      <div class="sc-l">Xu hướng thị trường</div>
+      <div class="sc-v vg" style="font-size:13px;margin-top:3px">Tăng mạnh</div>
+      <div class="sc-s">1–2 năm gần đây</div>
+    </div>
+    <div class="sc">
+      <div class="sc-l">Vấn đề lớn nhất</div>
+      <div class="sc-v vc" style="font-size:13px;margin-top:3px">Mất lòng tin</div>
+      <div class="sc-s">Marketing tốt, sản phẩm chưa clean</div>
+    </div>
+    <div class="sc">
+      <div class="sc-l">Cách tiếp cận tốt nhất</div>
+      <div class="sc-v ve" style="font-size:13px;margin-top:3px">Trải nghiệm</div>
+      <div class="sc-s">Không phải lý thuyết</div>
+    </div>
+    <div class="sc">
+      <div class="sc-l">Điều thuyết phục nhất</div>
+      <div class="sc-v vg" style="font-size:13px;margin-top:3px">Testimonial</div>
+      <div class="sc-s">Người thật · Câu chuyện thật</div>
+    </div>
+  </div>
+
+  <div class="stitle">Vấn đề thật sự của khách hàng</div>
+  <div class="g3">
+    <div class="card">
+      <div class="cl">Vấn đề #1</div>
+      <div class="ct">Căng thẳng, mất cân bằng</div>
+      <div class="cb">Không kết nối được với cơ thể. Không có thói quen chăm sóc bản thân. Đây là pain point số 1 dẫn đến tìm kiếm giải pháp.</div>
+      <div class="tags"><span class="tag tc">Pain chính</span></div>
+    </div>
+    <div class="card">
+      <div class="cl">Vấn đề #2</div>
+      <div class="ct">Đã thử nhiều — không tin thứ nào</div>
+      <div class="cb">Khách biết về wellness nhưng không tin brand nào. Ingredients không clean như marketing. Barrier lớn nhất: "liệu cái này có thật không?"</div>
+      <div class="tags"><span class="tag tg">Cơ hội DEVI</span></div>
+    </div>
+    <div class="card">
+      <div class="cl">Vấn đề #3</div>
+      <div class="ct">Thiếu cộng đồng cùng tần số</div>
+      <div class="cb">Người muốn sống lành mạnh khó tìm được người đồng hành. Cộng đồng là thứ giữ chân khách lâu dài — không phải sản phẩm.</div>
+      <div class="tags"><span class="tag ts">Cơ hội retention</span></div>
+    </div>
+  </div>
+
+  <div class="stitle">Khách hàng mục tiêu</div>
+  <div class="g2">
+    <div class="card">
+      <div class="cl">Khách hàng chính — B2C</div>
+      <div class="ct">Phụ nữ 23–40 · Thành thị · Áp lực cao</div>
+      <div class="cb">Đang hướng đến lối sống thuận tự nhiên. Áp lực công việc, dễ stress. Tìm kiếm qua mạng xã hội — tin tưởng qua người quen giới thiệu hoặc trải nghiệm trực tiếp.</div>
+      <div class="tags"><span class="tag tg">Chất lượng first</span><span class="tag tn">FB · IG</span><span class="tag tn">Referral key</span></div>
+    </div>
+    <div class="card">
+      <div class="cl">Đối tác — B2B</div>
+      <div class="ct">Cùng tầm nhìn · Không chạy theo giá</div>
+      <div class="cb">DEVI không chọn đối tác vì giá. Tiêu chí: cùng mindset, không làm ăn kiểu chộp giật. Quyết định bởi 2 Founders sau quá trình tìm hiểu kỹ. Pháp lý là điều quan trọng nhất.</div>
+      <div class="tags"><span class="tag te">Giá trị cốt lõi</span><span class="tag tc">Pháp lý ưu tiên</span></div>
+    </div>
+  </div>
+
+  <div class="stitle">Hành vi mua hàng</div>
+  <div class="g3">
+    <div class="card">
+      <div class="cl">Biết đến qua</div>
+      <div class="ct">Mạng xã hội</div>
+      <div class="cb">Facebook · Instagram là kênh chính. TikTok đang tăng.</div>
+    </div>
+    <div class="card">
+      <div class="cl">Tin tưởng qua</div>
+      <div class="ct">Trải nghiệm thực tế</div>
+      <div class="cb">Testimonial người thật · Review câu chuyện thực · Workshop thử. Không ai tin chỉ vì content đẹp hay copy hay.</div>
+    </div>
+    <div class="card">
+      <div class="cl">Quyết định mua khi</div>
+      <div class="ct">Stress cao hoặc được giới thiệu</div>
+      <div class="cb">Hai trigger chính: Khách quyết định mua khi bị kích hoạt bởi đỉnh điểm của Stress hoặc được bạn bè giới thiệu.</div>
+    </div>
+  </div>
+
+  <div class="ph-box">
+    <strong>Số liệu thị trường — Cần bổ sung</strong>
+    Quy mô thị trường wellness VN · Tốc độ tăng trưởng · % người dùng sẵn sàng trả tiền cho workshop
+  </div>
+</div>
+
+<!-- ═══════════════════════ PERSONA -->
+<div class="page" id="page-persona">
+  <div class="crumb">thị trường / chân dung khách hàng</div>
+  <div class="ptitle">Chân dung Khách hàng</div>
+  <div class="pdesc">Người trả tiền không luôn là người sử dụng. Hiểu đúng từng nhóm để tiếp cận đúng người, đúng thông điệp.</div>
+
+  <div class="g3">
+    <div class="pcard">
+      <div class="pava av-g">PV</div>
+      <div class="pname">Phụ nữ thành thị · 25–38</div>
+      <div class="prole">B2C · Người chi trả chính</div>
+      <div class="prow"><span class="pk">Vấn đề</span><span class="pv">Stress · mất kết nối với bản thân</span></div>
+      <div class="prow"><span class="pk">Mong muốn</span><span class="pv">Sức khoẻ toàn diện thân-tâm-trí</span></div>
+      <div class="prow"><span class="pk">Rào cản</span><span class="pv">Liệu cái này có thật không?</span></div>
+      <div class="prow"><span class="pk">Khi nào mua</span><span class="pv">Stress cao + được người tin giới thiệu</span></div>
+      <div class="prow"><span class="pk">Kênh</span><span class="pv">FB · IG · Gặp trực tiếp</span></div>
+      <div class="prow"><span class="pk">Chọn vì</span><span class="pv">Chất lượng → Hỗ trợ → Chi phí</span></div>
+      <div class="tags"><span class="tag tg">Nghiên cứu kỹ trước khi mua</span></div>
+    </div>
+    <div class="pcard">
+      <div class="pava av-e">NT</div>
+      <div class="pname">Người tìm kiếm sâu · 28–45</div>
+      <div class="prole">B2C · Workshop & Retreat buyer</div>
+      <div class="prow"><span class="pk">Vấn đề</span><span class="pv">Đã thử nhiều — chưa tìm được "đúng chỗ"</span></div>
+      <div class="prow"><span class="pk">Mong muốn</span><span class="pv">Lối sống kết nối tự nhiên bền vững</span></div>
+      <div class="prow"><span class="pk">Rào cản</span><span class="pv">Thiếu cộng đồng cùng tần số</span></div>
+      <div class="prow"><span class="pk">Khi nào mua</span><span class="pv">Khi workshop cho cảm nhận rõ ràng ngay</span></div>
+      <div class="prow"><span class="pk">Kênh</span><span class="pv">Social · Event · Người quen giới thiệu</span></div>
+      <div class="prow"><span class="pk">Chọn vì</span><span class="pv">Cảm nhận được ngay trong buổi đầu</span></div>
+      <div class="tags"><span class="tag te">Tiềm năng giới thiệu cao</span></div>
+    </div>
+    <div class="pcard">
+      <div class="pava av-c">ĐT</div>
+      <div class="pname">Đối tác OEM · B2B</div>
+      <div class="prole">B2B · Được chọn bởi 2 Founders</div>
+      <div class="prow"><span class="pk">Tiêu chí #1</span><span class="pv">Cùng mindset & giá trị cốt lõi</span></div>
+      <div class="prow"><span class="pk">Tiêu chí #2</span><span class="pv">Không làm ăn kiểu chộp giật</span></div>
+      <div class="prow"><span class="pk">Lo ngại</span><span class="pv">Pháp lý · Kiểm định · Nguồn hàng</span></div>
+      <div class="prow"><span class="pk">Quyết định</span><span class="pv">Prema & Vinayaki · Sau tìm hiểu kỹ</span></div>
+      <div class="prow"><span class="pk">Kênh</span><span class="pv">Quan hệ có sẵn · Referral</span></div>
+      <div class="prow"><span class="pk">Timeline</span><span class="pv">Dài · Cần pháp lý rõ ràng</span></div>
+      <div class="tags"><span class="tag tc">Pháp lý ưu tiên hàng đầu</span></div>
+    </div>
+  </div>
+
+  <div class="stitle">2 điều cần nhớ về khách hàng</div>
+  <div class="g2">
+    <div class="ins">
+      <div class="ins-h">Người trả tiền ≠ Người sử dụng</div>
+      <div class="ins-b">Phụ nữ 25–40 thường trả tiền cho bản thân hoặc cả gia đình. Người chi trả là người quyết định. Nội dung và thông điệp cần nhắm đúng người trả tiền — không chỉ người dùng cuối.</div>
+    </div>
+    <div class="ins e">
+      <div class="ins-h">Quyết định mua bị kích hoạt bởi cảm xúc</div>
+      <div class="ins-b">Không ai mua vì thấy nội dung hay. Họ mua khi stress lên đến ngưỡng cần giải pháp NGAY — hoặc người thân recommend trực tiếp. Xây dựng hệ thống referral quan trọng hơn chạy quảng cáo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ CẠNH TRANH -->
+<div class="page" id="page-competitor">
+  <div class="crumb">thị trường / đối thủ cạnh tranh</div>
+  <div class="ptitle">Đối thủ Cạnh tranh</div>
+  <div class="pdesc">Thị trường có nhiều người chơi — nhưng không ai làm đúng về pháp lý và kiểm định. Đây là lợi thế DEVI có thể chiếm.</div>
+
+  <div class="stats">
+    <div class="sc"><div class="sc-l">Đối thủ đã biết</div><div class="sc-v vc">6+</div><div class="sc-s">Thị trường VN</div></div>
+    <div class="sc"><div class="sc-l">Điểm yếu chung</div><div class="sc-v vc" style="font-size:12px;margin-top:4px">Pháp lý yếu</div><div class="sc-s">Kiểm định chưa đủ</div></div>
+    <div class="sc"><div class="sc-l">DEVI khác biệt</div><div class="sc-v vg" style="font-size:12px;margin-top:4px">Ingredients<br>thật sự clean</div></div>
+    <div class="sc"><div class="sc-l">Cạnh tranh bằng</div><div class="sc-v ve" style="font-size:12px;margin-top:4px">Trải nghiệm</div><div class="sc-s">Không phải giá</div></div>
+  </div>
+
+  <div class="stitle">So sánh với đối thủ</div>
+  <div class="comp-wrap">
+    <table class="ctable">
+      <tr>
+        <th>Thương hiệu</th>
+        <th>Marketing</th>
+        <th>Nguyên liệu</th>
+        <th>Pháp lý & Kiểm định</th>
+        <th>Trải nghiệm sâu</th>
+        <th>Nhận xét</th>
+      </tr>
+      <tr class="devi">
+        <td>DEVI (mục tiêu)</td>
+        <td><span class="dot-m"></span>Đang xây dựng</td>
+        <td><span class="dot-s"></span>100% thuận tự nhiên</td>
+        <td><span class="dot-s"></span>Ưu tiên hàng đầu</td>
+        <td><span class="dot-s"></span>Có — hệ thống rõ</td>
+        <td>Lợi thế: clean + pháp lý + transformation</td>
+      </tr>
+      <tr>
+        <td>Cocoon</td>
+        <td><span class="dot-s"></span>Rất tốt</td>
+        <td><span class="dot-m"></span>Chưa hoàn toàn clean</td>
+        <td><span class="dot-m"></span>Một phần</td>
+        <td><span class="dot-w"></span>Không có</td>
+        <td>Brand mạnh, ingredients còn questionable</td>
+      </tr>
+      <tr>
+        <td>Noon</td>
+        <td><span class="dot-s"></span>Tốt</td>
+        <td><span class="dot-m"></span>Trung bình</td>
+        <td><span class="dot-w"></span>Yếu</td>
+        <td><span class="dot-w"></span>Không có</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Cỏ Mềm</td>
+        <td><span class="dot-m"></span>Vừa</td>
+        <td><span class="dot-m"></span>Tương đối</td>
+        <td><span class="dot-w"></span>Yếu</td>
+        <td><span class="dot-w"></span>Không có</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Karose</td>
+        <td><span class="dot-m"></span>Vừa</td>
+        <td><span class="dot-m"></span>Trung bình</td>
+        <td><span class="dot-w"></span>Yếu</td>
+        <td><span class="dot-w"></span>Không có</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Lalafarm</td>
+        <td><span class="dot-m"></span>Vừa</td>
+        <td><span class="dot-m"></span>Natural-focused</td>
+        <td><span class="dot-w"></span>Yếu</td>
+        <td><span class="dot-w"></span>Không có</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Intheforest</td>
+        <td><span class="dot-m"></span>Vừa</td>
+        <td><span class="dot-m"></span>Trung bình</td>
+        <td><span class="dot-w"></span>Yếu</td>
+        <td><span class="dot-w"></span>Không có</td>
+        <td>—</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="stitle">2 khoảng trống DEVI có thể chiếm</div>
+  <div class="g2">
+    <div class="ins">
+      <div class="ins-h">Không ai xây dựng hệ sinh thái sống thuận tự nhiên</div>
+      <div class="ins-b">Tất cả đối thủ đang bán sản phẩm đơn lẻ. Không ai có hệ thống Sản phẩm → Workshop → Retreat → Cộng đồng. Đây là khoảng trống thật sự — DEVI không cần cạnh tranh về giá hay quảng cáo.</div>
+    </div>
+    <div class="ins c">
+      <div class="ins-h">Pháp lý = rào cản cạnh tranh nếu làm đúng</div>
+      <div class="ins-b">Điểm yếu lớn nhất của tất cả đối thủ: kiểm định và công bố sản phẩm. Nếu DEVI làm đúng pháp lý và minh bạch về thành phần, đây trở thành lợi thế khó bị copy nhất trên thị trường.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ BMC -->
+<div class="page" id="page-bmc">
+  <div class="crumb">mô hình kinh doanh / canvas</div>
+  <div class="ptitle">Mô hình Kinh doanh</div>
+  <div class="pdesc">9 khối · Mọi thứ xoay quanh trải nghiệm — không phải sản phẩm</div>
+  <div class="bmc">
+    <div class="bc sp2r">
+      <div class="bl">Đối tác chính</div>
+      <div class="bt">Nhà sản xuất thuận tự nhiên (OEM)</div>
+      <div class="bb">Sản phẩm gia đình · Skincare · Tinh dầu. Tiêu chí chọn: cùng mindset, không chộp giật. Pháp lý & kiểm định là điều kiện bắt buộc.</div>
+      <div class="tags"><span class="tag tg">Cùng giá trị</span><span class="tag tc">Pháp lý rõ</span></div>
+    </div>
+    <div class="bc">
+      <div class="bl">Hoạt động chính</div>
+      <div class="bb">Tổ chức workshop · Thiết kế retreat · Tạo nội dung · Xây cộng đồng · Tìm nguồn OEM</div>
+    </div>
+    <div class="bc focus sp2r">
+      <div class="bl">Giá trị cốt lõi</div>
+      <div class="bt">Chuyển hoá toàn diện Thân-Tâm-Trí, hướng đến Lối sống Thuận Tự nhiên</div>
+      <div class="bb">100% thuận tự nhiên · Yoga cổ điển · Ayurveda · Workshop & Retreat. Không bán sản phẩm — xây dựng hành trình thay đổi.</div>
+      <div class="tags"><span class="tag tg">Chuyển hoá</span><span class="tag tg">Thuần tự nhiên</span><span class="tag ts">Lâu dài</span></div>
+    </div>
+    <div class="bc">
+      <div class="bl">Quan hệ KH</div>
+      <div class="bb">Tư vấn trước & sau · Người phụ trách cố định · Nhóm cộng đồng · Trust qua testimonial</div>
+    </div>
+    <div class="bc">
+      <div class="bl">Phân khúc KH</div>
+      <div class="bb">Phụ nữ 23–40 · Thành thị · Thu nhập trung-cao · Tìm lối sống thuận tự nhiên</div>
+    </div>
+    <div class="bc">
+      <div class="bl">Nguồn lực chính</div>
+      <div class="bb">Prema & Vinayaki (2 founders) · Mạng lưới OEM · Nội dung workshop · Cộng đồng</div>
+    </div>
+    <div class="bc">
+      <div class="bl">Kênh tiếp cận</div>
+      <div class="bb">FB · IG · Website · Referral · Gặp trực tiếp · Event wellness</div>
+    </div>
+    <div class="bc sp2c">
+      <div class="bl">Cơ cấu chi phí</div>
+      <div class="bb">Chi phí lớn nhất: Tổ chức workshop (địa điểm + người hướng dẫn). Rủi ro: tồn kho sản phẩm OEM nếu đặt quá nhiều. Bắt đầu nhỏ để test demand.</div>
+      <div class="tags"><span class="tag tc">Rủi ro: tồn kho</span><span class="tag te">Chi phí: địa điểm + người</span></div>
+    </div>
+    <div class="bc sp3c">
+      <div class="bl">Nguồn doanh thu</div>
+      <div class="bb">Sản phẩm OEM / Made by DEVI (dòng tiền nhỏ · margin thấp) · Workshop & Khoá học (nguồn thu chính · thanh toán theo kỳ) · Retreat (lợi nhuận cao · giữ khách)</div>
+      <div class="tags"><span class="tag tg">Workshop = Chính</span><span class="tag te">Retreat = Lợi nhuận</span><span class="tag tn">Sản phẩm = Cửa vào</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ DOANH THU -->
+<div class="page" id="page-revenue">
+  <div class="crumb">mô hình kinh doanh / doanh thu</div>
+  <div class="ptitle">Cơ cấu Doanh thu & Chiến lược Giá</div>
+  <div class="pdesc">3 nguồn doanh thu · Mỗi nguồn có vai trò khác nhau · Tiền thật đến từ Workshop và Retreat</div>
+
+  <div class="stitle-serif">3 tầng doanh thu</div>
+
+  <div class="rev-item">
+    <div class="rev-ico ri-g">🌿</div>
+    <div class="rev-info">
+      <div class="rev-t">Sản phẩm OEM / Made by DEVI</div>
+      <div class="rev-d">Skincare · Tinh dầu · Sản phẩm gia đình. Gói lẻ linh hoạt (không combo). Thanh toán theo kỳ. Bắt đầu với lượng nhỏ — không đặt bulk.</div>
+    </div>
+    <div class="rev-right">
+      <div class="rev-m m-lo">Margin thấp</div>
+      <div class="rev-r">Vai trò: Cửa vào + Dòng tiền</div>
+    </div>
+  </div>
+
+  <div class="rev-item">
+    <div class="rev-ico ri-e">🧘</div>
+    <div class="rev-info">
+      <div class="rev-t">Workshop · Khoá học</div>
+      <div class="rev-d">Yoga · Ayurveda · Hít thở · Âm thanh trị liệu. Online + Offline kết hợp. 5–10 người / buổi. Tư vấn trước & sau — đây là điểm khác biệt quan trọng nhất.</div>
+    </div>
+    <div class="rev-right">
+      <div class="rev-m m-mi">Nguồn thu chính</div>
+      <div class="rev-r">Vai trò: Chuyển đổi + Niềm tin</div>
+    </div>
+  </div>
+
+  <div class="rev-item">
+    <div class="rev-ico ri-c">🌄</div>
+    <div class="rev-info">
+      <div class="rev-t">Retreat · Chương trình chuyên sâu</div>
+      <div class="rev-d">1–3 ngày. Nhỏ và kiểm soát chất lượng. Trải nghiệm phải tạo được cảm nhận thay đổi rõ ràng. Nếu không → khách không quay lại.</div>
+    </div>
+    <div class="rev-right">
+      <div class="rev-m m-hi">Lợi nhuận cao</div>
+      <div class="rev-r">Vai trò: Giữ chân + Referral</div>
+    </div>
+  </div>
+
+  <div class="stitle">Nên và Không nên</div>
+  <div class="g2">
+    <div class="card">
+      <div class="cl" style="color:var(--clay)">Không nên — giai đoạn đầu</div>
+      <div class="dos-row"><div class="dos-icon di-no">✗</div><div class="dos-text">Ra nhiều sản phẩm cùng lúc — loãng nguồn lực và khó nhớ thương hiệu</div></div>
+      <div class="dos-row"><div class="dos-icon di-no">✗</div><div class="dos-text">Làm brand quá rộng — mất đi bản sắc rõ ràng</div></div>
+      <div class="dos-row"><div class="dos-icon di-no">✗</div><div class="dos-text">Chạy quảng cáo trước khi workshop đã được kiểm chứng</div></div>
+      <div class="dos-row"><div class="dos-icon di-no">✗</div><div class="dos-text">Làm kế hoạch tài chính 3 năm phức tạp khi chưa có số thực</div></div>
+    </div>
+    <div class="card">
+      <div class="cl" style="color:var(--grn)">Nên làm — theo thứ tự</div>
+      <div class="dos-row"><div class="dos-icon di-yes">✓</div><div class="dos-text">Chỉ giữ 2–3 sản phẩm chủ lực — dễ nhớ, dễ bán, dễ scale</div></div>
+      <div class="dos-row"><div class="dos-icon di-yes">✓</div><div class="dos-text">Tổ chức workshop sớm nhất có thể — để biết khách có thật sự trả tiền không</div></div>
+      <div class="dos-row"><div class="dos-icon di-yes">✓</div><div class="dos-text">Workshop nhỏ 5–10 người — kiểm soát chất lượng trải nghiệm</div></div>
+      <div class="dos-row"><div class="dos-icon di-yes">✓</div><div class="dos-text">Xây cộng đồng ngay từ đầu — Telegram hoặc nhóm nhỏ</div></div>
+      <div class="dos-row"><div class="dos-icon di-yes">✓</div><div class="dos-text">Testimonial là nội dung marketing quan trọng nhất</div></div>
+    </div>
+  </div>
+
+  <div class="ph-box">
+    <strong>Giá cụ thể — Cần bổ sung</strong>
+    Workshop (VNĐ / buổi) · Retreat (VNĐ / khoá) · Sản phẩm (VNĐ / SKU) · Break-even point mỗi buổi workshop
+  </div>
+</div>
+
+<!-- ═══════════════════════ RỦI RO -->
+<div class="page" id="page-risk">
+  <div class="crumb">vận hành / rủi ro & pháp lý</div>
+  <div class="ptitle">Rủi ro & Pháp lý</div>
+  <div class="pdesc">3 rủi ro cần xử lý ngay · Pháp lý không chỉ là rủi ro — làm đúng, đây là lợi thế cạnh tranh khó copy nhất.</div>
+
+  <div class="stats">
+    <div class="sc"><div class="sc-l">Rủi ro #1</div><div class="sc-v vc" style="font-size:12px;margin-top:4px">Nguồn hàng</div><div class="sc-s">Không đáp ứng kịp đơn</div></div>
+    <div class="sc"><div class="sc-l">Rủi ro #2</div><div class="sc-v vc" style="font-size:12px;margin-top:4px">Pháp lý SP</div><div class="sc-s">Kiểm định & công bố</div></div>
+    <div class="sc"><div class="sc-l">Rủi ro #3</div><div class="sc-v ve" style="font-size:12px;margin-top:4px">Workshop<br>không fill</div></div>
+    <div class="sc"><div class="sc-l">Cách xử lý</div><div class="sc-v vg" style="font-size:12px;margin-top:4px">ASAP</div><div class="sc-s">Triệt để · Theo HĐ đã ký</div></div>
+  </div>
+
+  <div class="risk hi">
+    <span class="rbadge rb-hi">CAO</span>
+    <div>
+      <div class="risk-t">Nguồn hàng không đáp ứng được đơn hàng</div>
+      <div class="risk-b">Rủi ro được Trisha identify đầu tiên. Cần ký hợp đồng OEM với điều khoản SLA rõ ràng về capacity. Không chỉ chọn đối tác vì cùng values — phải có cam kết giao hàng cụ thể.</div>
+    </div>
+  </div>
+
+  <div class="risk hi">
+    <span class="rbadge rb-hi">CAO</span>
+    <div>
+      <div class="risk-t">Pháp lý & Kiểm định sản phẩm</div>
+      <div class="risk-b">Tất cả đối thủ đều yếu ở điểm này — đây là cơ hội. Cần kiểm định từ cơ quan chuyên môn trước khi ra thị trường. Làm việc với luật sư chuyên ngành. Minh bạch hoá thành phần là lợi thế cạnh tranh dài hạn.</div>
+    </div>
+  </div>
+
+  <div class="risk md">
+    <span class="rbadge rb-md">VỪA</span>
+    <div>
+      <div class="risk-t">Workshop không đủ người — lỗ chi phí cố định</div>
+      <div class="risk-b">Nếu workshop không fill đủ 5–10 người / buổi, chi phí địa điểm và người hướng dẫn không được bù đắp. Giải pháp: xây danh sách chờ trước khi xác nhận buổi. Cộng đồng nhỏ giúp giải quyết vấn đề này.</div>
+    </div>
+  </div>
+
+  <div class="risk md">
+    <span class="rbadge rb-md">VỪA</span>
+    <div>
+      <div class="risk-t">Tồn kho sản phẩm OEM</div>
+      <div class="risk-b">Đặt hàng nhiều ngay từ đầu khi chưa biết nhu cầu thực tế. Giải pháp: bắt đầu với số lượng nhỏ để test. Gói lẻ linh hoạt giúp giảm rủi ro tồn kho so với bán combo.</div>
+    </div>
+  </div>
+
+  <div class="risk lo">
+    <span class="rbadge rb-lo">THẤP</span>
+    <div>
+      <div class="risk-t">Đối tác không đáp ứng KPI trong 6 tháng đầu</div>
+      <div class="risk-b">Kỳ vọng xử lý: làm việc rõ với đối tác và linh hoạt theo hợp đồng đã ký. Cần có điều khoản exit rõ ràng từ đầu. Phản ứng khi xảy ra vấn đề: ASAP và triệt để.</div>
+    </div>
+  </div>
+
+  <div class="notebar">Lời khuyên quan trọng: Đừng coi pháp lý là gánh nặng. Nếu DEVI là thương hiệu wellness đầu tiên tại VN có đầy đủ kiểm định minh bạch, đây trở thành lợi thế khó bị sao chép nhất — và là lý do khách tin tưởng tuyệt đối.</div>
+</div>
+
+<!-- ═══════════════════════ ROADMAP -->
+<div class="page" id="page-roadmap">
+  <div class="crumb">triển khai / kế hoạch</div>
+  <div class="ptitle">Kế hoạch Triển khai</div>
+  <div class="pdesc">4 giai đoạn đơn giản · Kiểm chứng từng bước trước khi mở rộng · Không cần kế hoạch 12 tháng phức tạp ngay từ đầu</div>
+
+  <div class="stitle-serif">4 giai đoạn</div>
+  <div class="phases">
+    <div class="phase ph1">
+      <div class="phase-n">Giai đoạn 1</div>
+      <div class="phase-t">Ra mắt, thâm nhập</div>
+      <div class="phase-b">Thâm nhập & Thử sai. Tập trung 2-3 SKU chủ lực để đo lường độ chấp nhận của thị trường. Bán qua FB/IG + trực tiếp. Thu thập testimonial thật. Kiểm tra: ai thực sự trả tiền?</div>
+      <div class="tags" style="margin-top:7px"><span class="tag tg">2–3 sản phẩm chủ lực</span></div>
+      <div class="phase-kpi">KPI: Mua lại lần 2 + Testimonial đầu tiên</div>
+    </div>
+    <div class="phase ph2">
+      <div class="phase-n">Giai đoạn 2</div>
+      <div class="phase-t">Mở workshop đầu tiên</div>
+      <div class="phase-b">5–10 người. Chủ đề sức khoẻ / ayurveda / wellness. Khách phải cảm nhận được sự thay đổi ngay trong buổi. Đây là bước biết được "tiền thật có hay không".</div>
+      <div class="tags" style="margin-top:7px"><span class="tag ts">Xây danh sách chờ trước</span></div>
+      <div class="phase-kpi">KPI: Tỷ lệ trả tiền + Hài lòng sau buổi</div>
+    </div>
+    <div class="phase ph3">
+      <div class="phase-n">Giai đoạn 3</div>
+      <div class="phase-t">Kết hợp Phễu + Workshop</div>
+      <div class="phase-b">Tạo hành trình liên kết: sản phẩm dẫn khách đến workshop. Workshop dẫn khách đến retreat. Đây là khi hệ thống bắt đầu hoạt động.</div>
+      <div class="tags" style="margin-top:7px"><span class="tag te">Hệ thống bắt đầu chạy</span></div>
+      <div class="phase-kpi">KPI: Khách từ SP → tham gia Workshop</div>
+    </div>
+    <div class="phase ph4">
+      <div class="phase-n">Giai đoạn 4</div>
+      <div class="phase-t">Tổ chức Retreat đầu tiên</div>
+      <div class="phase-b">Nhỏ · Kiểm soát chất lượng tuyệt đối. Trải nghiệm phải tạo thay đổi rõ ràng. Nếu không → fix trước khi mở rộng quy mô.</div>
+      <div class="tags" style="margin-top:7px"><span class="tag tc">Fix trước khi scale</span></div>
+      <div class="phase-kpi">KPI: Khách quay lại + Tự giới thiệu người mới</div>
+    </div>
+  </div>
+
+  <div class="stitle">Điều kiện chuyển sang giai đoạn tiếp theo</div>
+  <div class="g3">
+    <div class="ins">
+      <div class="ins-h">GĐ 1 → GĐ 2</div>
+      <div class="ins-b">Có ít nhất 10–15 khách mua lần 2 + 3–5 testimonial thật. Nếu chưa → tối ưu sản phẩm, chưa cần mở workshop.</div>
+    </div>
+    <div class="ins e">
+      <div class="ins-h">GĐ 2 → GĐ 3</div>
+      <div class="ins-b">Workshop fill đủ người + khách hỏi "có chương trình dài hơn không?" Đó là tín hiệu rõ ràng của demand cho retreat.</div>
+    </div>
+    <div class="ins c">
+      <div class="ins-h">GĐ 3 → Scale</div>
+      <div class="ins-b">Retreat tạo được referral tự nhiên — khách chủ động giới thiệu, không cần nhờ. Đây là tín hiệu duy nhất để bắt đầu scale.</div>
+    </div>
+  </div>
+
+  <div class="hq" style="margin-top:16px">
+    <div class="hq-text">Mỗi mùa trong năm có đặc trưng sản phẩm riêng — nhưng nhu cầu sức khoẻ không giới hạn theo mùa. Có thể ra mắt bất cứ khi nào team đã sẵn sàng.</div>
+    <div class="hq-src">by Trisha · NAKED Founders</div>
+  </div>
+
+  <div class="ph-box">
+    <strong>Mốc thời gian cụ thể — Cần điền</strong>
+    Tháng bắt đầu Giai đoạn 1 · Ngày workshop đầu tiên · Target số khách trong 3 tháng đầu
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+function go(id,el,crumb){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item:not(.locked)').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(crumb) document.getElementById('tcrumb').textContent=crumb;
+}
+</script>
+</body>
+</html>
